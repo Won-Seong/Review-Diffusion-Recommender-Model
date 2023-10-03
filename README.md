@@ -33,7 +33,8 @@ Diffusion Recommender Model
 - 이러한 순방향 과정은 계산 가능한 사후 분포로 이어지며, 역방향 과정에서 유연한(flexible) 신경망을 통해 복잡한 분포를 반복적으로 모델링하는 방법을 제시하였다.
 - **추천 모델의 목적은 확산 모형과 잘 일치**하는데, 왜냐하면 **추천 모형은 본질적으로 손상(corrupted)된 과거의 상호 작용을 기반으로 미래의 상호 작용 확률을 추론**하기 때문이다. 이 경우, **손상은 거짓 양성(false-positive)과 거짓-음성(false-negative)에 의해 오염된 상호 작용을 암시**한다. 그림 1(c)에서 이를 확인할 수 있다.
 
-![Untitled](Diffusion%20Recommender%20Model%207a4de6674a3448b29b15ce3e8e96bdd4/Untitled.png)
+![Untitled 1](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/d299bf84-8a92-4954-8f39-3d5e38c4adb9)
+
 
 ## 1.3 DiffRec
 
