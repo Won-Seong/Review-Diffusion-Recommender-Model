@@ -4,15 +4,6 @@
 
 Diffusion Recommender Model
 
-## 0. Simple terminology summary
-
-본 논문 리뷰는 한국어로 쓰였고, 최대한 영어를 덜 쓰도록 노력하였습니다. 따라서 본 리뷰에서 사용하는 주요한 용어에 대해 먼저 간단히 정리를 해 보았습니다.
-
-- Diffusion Model(확산 모형) : 다음의 두 가지 과정을 통해 데이터를 생성하는 생성 모형.
-    - Forward diffusion process(순방향 과정) : 데이터에 잡음을 점진적으로 더하는 과정. 이 과정을 계속 반복하다 보면 결국에는 데이터가 순수한 잡음으로 변한다.
-    - Reverse generative process(역방향 과정) : 잡음을 한 단계씩 제거하는 과정. 이 과정을 통해 순수한 잡음으로부터 데이터를 생성한다.
-- Evidence Lower BOund(증거 하한)
-
 ## 1. Introduction
 
 ## 1.1 Motivation
@@ -37,14 +28,14 @@ Diffusion Recommender Model
 
 ## 1.3 DiffRec
 
-이 논문에서 그들은 **확산 추천 모형(Diffusion Recommender Model, DiffRec)**을 제시한다. 이 모형은 다음과 같은 특징을 갖는다. 
+이 논문에서 그들은 **확산 추천 모형(Diffusion Recommender Model, DiffRec)** 을 제시한다. 이 모형은 다음과 같은 특징을 갖는다. 
 
 - **잡음을 제거하는(denoising) 관점에서 사용자의 상호 작용 확률을 추론**한다.
 - 기술적으로, DiffRec은 사용자의 상호 작용 과거(interaction histroies)를 **순방향 과정에서 사전에 주어진 가우시안 잡음(scheduled Gaussian noises)을 주입하는 것으로 오염**시킨다.
 - 역방향 과정에서, 매개 변수화된(parameterized) 신경망을 통해 **오염된 상호 작용으로부터 원래의 상호 작용을 복원**한다. 이는 반복적인 과정으로 이루어진다.
 - 그러나 이미지 생성에서 사용했던 순방향 과정을 그대로 이용할 수는 없는데, 왜냐하면 개인 맞춤형 추천 생성의 필요성 때문이다. 이미지 생성에서는 순방향 과정에서 이미지가 순수한 잡음이 될 때까지 이를 오염시킨다. 그러나  추천 모형에서는 사용자의 손상된 상호 작용에서 개인화된 정보를 유지하기 위해서는 이를 피해야 한다. 따라서, **순방향 과정에서 추가되는 잡음의 크기를 줄일 필요**가 있다.
 
-한걸음 더 나아가, 추천 시스템을 위한 생성 모형을 구축하는 데에 존재하는 두 가지 본질적인 어려움을 이 논문에서는 다룬다: **대규모 아이템 예측(large-scale item prediction)과 시간 모델링(temporal modeling)**이다.
+한걸음 더 나아가, 추천 시스템을 위한 생성 모형을 구축하는 데에 존재하는 두 가지 본질적인 어려움을 이 논문에서는 다룬다: **대규모 아이템 예측(large-scale item prediction)과 시간 모델링(temporal modeling)** 이다.
 
 1. **생성 모형은 동시에 모든 아이템의 상호 작용 확률을 예측하는데, 이는 상당한 자원을 요구**한다. 따라서 대규모 아이템 추천을 위해 생성 모형을 응용하는 게 제한된다.
 2. **생성 모형은 상호 작용 시퀀스에서 시간적 정보를 포착**해야 한다. 이러한 시간적 정보는 사용자의 선호도 변화를 처리하는 데에 중요한 역할을 한다. 
@@ -73,7 +64,7 @@ Diffusion Recommender Model
 - $t \in \{1, \dots, T\}$는 확산 단계(diffusion step)를 나타낸다.
 - $N$은 가우시안 분포를 지칭한다.
 - $\beta_ t \in (0, 1)$은 단계 $t$에서 더해지는 잡음의 크기를 조절한다.
-- $T \rightarrow \infin$일 때, $x_ T$는 표준 가우시안 잡음으로 접근한다.
+- $T \rightarrow \infty$일 때, $x_ T$는 표준 가우시안 잡음으로 접근한다.
 
 ## 2.2 Reverse process
 
@@ -136,8 +127,8 @@ $\theta$를 학습한 이후, 확산 모형은 $x_T \sim N(0, I)$를 추출하�
 
 ![Untitled 4](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/f63431a7-4649-44de-855e-5ef85c16428b)
 
-- $\alpha_ t = 1 - \beta_ t, \bar{ \alpha }_ t = \prod_ {t' = 1}^ t \alpha_ t'$
-- $x_ t = \sqrt{ \bar{ \alpha } }_t x_ 0 + \sqrt{ 1 - \bar \alpha_t }\epsilon,\ \epsilon \sim N(0, I)$
+- $\alpha_ t = 1 - \beta_ t, \bar{ \alpha }_ t = \prod_ {t' = 1}^ t {\alpha_ t'}$
+- $x_ {t} = \sqrt{ \bar{ \alpha } }_ t x_ 0 + \sqrt{ 1 - \bar \alpha_ t }\epsilon,\ \epsilon \sim N(0, I)$
 - $x_ {1:T}$에서 더해지는 잡음을 제한하기 위해, 다음과 같이 선형 잡음 스케줄을 설계한다.
 
 ![Untitled 5](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/ee5c911d-14b5-4547-89e6-0ab505f5dc5d)
@@ -203,7 +194,7 @@ $\mathcal {L_ 1}$을 식 (6)에 있는 복원 항의 음의 값이라고 정의�
 
 ### Optimization
 
-식 (11)과 식 (12)에 의하면, 식 (6)에 있는 ELBO는 $\mathcal{ L }_ 1 - \sum_ {t=2}^ T {\mathcal L_ t}$로 쓸 수 있다. 그러므로, ELBO를 최대화하기 위해서 $\sum _{t=1}^ T \mathcal{ L } _t$를 최소화하는 것으로 $\hat{ x }_ \theta(x_ t, t)$ 안의 $\theta$를 최적화할 수 있다. 실제 구현에서는 균등하게 시간 단계 $t \sim U(1, T)$를 추출하여 기댓값 $\mathcal { L }(x_ 0, \theta)$를 최적화한다. 
+식 (11)과 식 (12)에 의하면, 식 (6)에 있는 ELBO는 $\mathcal{ L }_ 1 - \sum_ {t=2}^ {T} {\mathcal L_ t}$로 쓸 수 있다. 그러므로, ELBO를 최대화하기 위해서 $\sum_ {t=1}^ T \mathcal{ L }_ t$를 최소화하는 것으로 $\hat{ x }_ {\theta} (x_ {t}, t)$ 안의 $\theta$를 최적화할 수 있다. 실제 구현에서는 균등하게 시간 단계 $t \sim U(1, T)$를 추출하여 기댓값 $\mathcal { L }(x_ 0, \theta)$를 최적화한다. 
 
 ![Untitled 13](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/2af2ba86-75d6-4d02-9e1e-4ac7c492e560)
 
@@ -217,16 +208,16 @@ DiffRec의 훈련 과정은 알고리즘 1에 다음과 같이 제시되어 있�
 
 ![Untitled 15](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/133b0afe-784b-4b90-b541-01ad6f1c1973)
 
-- $p_ t \propto \sqrt{ E[ \mathcal L_ t^ 2] }  / \sqrt{ \sum _{t'=1}^ T E[ \mathcal L _{t'}^ 2] }$는 표본 추출 확률을 나타낸다.
+- $p_ t \propto \sqrt{ E[ \mathcal L_ {t^ 2}] }  / \sqrt{ \sum _{t'=1}^ {T} E[ \mathcal {L} _{t'}^ {2}] }$는 표본 추출 확률을 나타낸다.
 - $\sum_ {t=1}^ T p_t = 1$
 
-$E[ \mathcal L _t^2]$를 계산하기 위해, 훈련 중 열 개의 $\mathcal L_ t$를 모으고 평균을 취한다. 충분한 $\mathcal L_ t$를 얻기 전까지는 균등 표본 추출을 이용한다. 직관적으로, 큰 $\mathcal L _t$ 값을 갖는 시간 단계는 더 쉽게 추출될 것이다.
+$E[ \mathcal {L} _{t^ {2}}]$를 계산하기 위해, 훈련 중 열 개의 $\mathcal {L}_ {t}$를 모으고 평균을 취한다. 충분한 $\mathcal {L}_ {t}$를 얻기 전까지는 균등 표본 추출을 이용한다. 직관적으로, 큰 $\mathcal L _t$ 값을 갖는 시간 단계는 더 쉽게 추출될 것이다.
 
 ## 3.3 DiffRec Inference
 
 이미지 합성 작업에서, 확산 모형은 임의의 가우시안 잡음을 추출하여 역방향 과정에 통과시킨다. 그러나, 상호 작용을 순수 잡음으로 오염시키는 건 추천에서 개인화된 사용자의 선호를 망가뜨린다. 따라서, 그들은 간단한 추론 전략을 제시한다. 이는 DiffRec의 훈련을 상호 작용 예측에 맞추어 조정한다. 
 
-더 자세히 말하자면, DiffRec은 우선 순방향 과정에서 $x_0$을 $x_ 0 \rightarrow x_ 1 \rightarrow \cdots \rightarrow x_ {T'}$와 같은 과정을 통해 오염시킨다. 이후, $\hat x_ T = x_ {T'}$와 같이 설정하고 $\hat x_ T \rightarrow \hat x_ {T-1} \rightarrow \cdots \rightarrow \hat x_ 0$와 같은 역방향 잡음 제거 과정을 수행한다. 이러한 역방향 과정은 분산을 무시하고 결정론적 추론을 위해 $\hat x_ {t-1} = \mu_ \theta(\hat x_ t, t)$ 식 (10)을 통해 활용한다. 특히, 다음의 두 사항을 고려하여, 그들은 순방향 과정에서 $T'<T$와 같이 설정하여 더하는 잡음을 줄인다. 
+더 자세히 말하자면, DiffRec은 우선 순방향 과정에서 $x_0$을 $x_ 0 \rightarrow x_ 1 \rightarrow \cdots \rightarrow x_ {T'}$와 같은 과정을 통해 오염시킨다. 이후, $\hat x_ T = x_ {T'}$와 같이 설정하고 $\hat x_ T \rightarrow \hat x_ {T-1} \rightarrow \cdots \rightarrow \hat x_ 0$와 같은 역방향 잡음 제거 과정을 수행한다. 이러한 역방향 과정은 분산을 무시하고 결정론적 추론을 위해 $\hat x_ {t-1} = \mu_ \theta(\hat x_ t, t)$ 식 (10)을 통해 활용한다. 특히, 다음의 두 사항을 고려하여, 그들은 순방향 과정에서 $T\' < T$와 같이 설정하여 더하는 잡음을 줄인다. 
 
 1. 사용자의 상호 작용은 false-positive와 false-negative 상호 작용 때문에 자연스럽게 잡음이 섞여 있다.
 2. 개인화된 정보를 함유하고 있다. 
