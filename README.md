@@ -301,7 +301,7 @@ $[ z_ 0^ c ]^ C_ {c=1}$을 합치는 것으로 압축된 $z_ 0$을 얻을 수 �
         
         ![Untitled 19](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/ccbfac4d-42af-4d23-b041-d2f6d646727d)
 
-    - Idx$ (i) $는 사용자 $u$의 상호 작용 시퀀스 $S$ 내에서 아이템 $i$의 인덱스를 나타낸다.
+    - Idx(i)는 사용자 $u$의 상호 작용 시퀀스 $S$ 내에서 아이템 $i$의 인덱스를 나타낸다.
 - 다시 가중된 상호 작용 과거 $\bar x_ 0$을 DiffRec과 L-DiffRec에 넣는 것으로 T-DiffRec과 LT-DiffRec을 얻을 수 있다. 이들은 상대적으로 시간적 정보를 사용한다.
 
 # 4. Experiments
