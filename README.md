@@ -80,7 +80,7 @@ Diffusion Recommender Model
 - 사전 매칭 항(prior matching term)은 상수이므로 최적화 과정에서 무시할 수 있다.
 - 잡음 제거 매칭 항(denoising matching term)은 $p_ \theta(x_ {t-1} \vert x_ t)$를 계산 가능한 참(ground-truth) 전이 단계 $q( x_ {t-1} \vert x_ t, x_ 0)$과 최대한 같아지도록 조정한다.
 - $\theta$는 $x_ t$로부터 $x_ {t-1}$을 반복적으로 복원하기 위해 최적화된다.
-- 잡음 제거 매칭 항은 $\sum_{t=2}^T {E_ {t, \epsilon} {[ \lVert \epsilon - \epsilon_ \theta (x_ t, t) \rVert ^ 2 _ 2 ]}}$으로 간단하게 쓸 수 있다.
+- 잡음 제거 매칭 항은 $\sum {E_ {t, \epsilon} {[ \lVert \epsilon - \epsilon_ \theta (x_ t, t) \rVert ^ 2 _ 2 ]}}$으로 간단하게 쓸 수 있다.
     - $\epsilon \sim N(0 , I)$
     - $\epsilon_ \theta(x_ t, t)$는 $\epsilon$을 예측하기 위해 신경망에 의해 매개 변수화된다. 이 $\epsilon$은 순방향 과정에서 $x_ 0$에서 $x_ t$를 결정하기 위해 쓰인다.
 
@@ -127,7 +127,7 @@ $\theta$를 학습한 이후, 확산 모형은 $x_T \sim N(0, I)$를 추출하�
 
 ![Untitled 4](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/f63431a7-4649-44de-855e-5ef85c16428b)
 
-- $\alpha_ t = 1 - \beta_ t, \bar{ \alpha }_ t = \prod_ {t' = 1}^ t {\alpha_ t'}$
+- $\alpha_ t = 1 - \beta_ t, \bar{ \alpha }_ t = \prod {\alpha_ t'}$
 - $x_ {t} = \sqrt{ \bar{ \alpha } }_ t x_ 0 + \sqrt{ 1 - \bar \alpha_ t }\epsilon,\ \epsilon \sim N(0, I)$
 - $x_ {1:T}$에서 더해지는 잡음을 제한하기 위해, 다음과 같이 선형 잡음 스케줄을 설계한다.
 
@@ -194,7 +194,7 @@ $\mathcal {L_ 1}$을 식 (6)에 있는 복원 항의 음의 값이라고 정의�
 
 ### Optimization
 
-식 (11)과 식 (12)에 의하면, 식 (6)에 있는 ELBO는 $\mathcal{ L }_ 1 - \sum_ {t=2}^ {T} {\mathcal L_ t}$로 쓸 수 있다. 그러므로, ELBO를 최대화하기 위해서 $\sum_ {t=1}^ T \mathcal{ L }_ t$를 최소화하는 것으로 $\hat{ x }_ {\theta} (x_ {t}, t)$ 안의 $\theta$를 최적화할 수 있다. 실제 구현에서는 균등하게 시간 단계 $t \sim U(1, T)$를 추출하여 기댓값 $\mathcal { L }(x_ 0, \theta)$를 최적화한다. 
+식 (11)과 식 (12)에 의하면, 식 (6)에 있는 ELBO는 $\mathcal{ L }_ 1 - \sum_ {\mathcal L_ t}$로 쓸 수 있다. 그러므로, ELBO를 최대화하기 위해서 $\sum \mathcal{ L }_ t$를 최소화하는 것으로 $\hat{ x }_ {\theta} (x_ {t}, t)$ 안의 $\theta$를 최적화할 수 있다. 실제 구현에서는 균등하게 시간 단계 $t \sim U(1, T)$를 추출하여 기댓값 $\mathcal { L }(x_ 0, \theta)$를 최적화한다. 
 
 ![Untitled 13](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/2af2ba86-75d6-4d02-9e1e-4ac7c492e560)
 
@@ -208,10 +208,10 @@ DiffRec의 훈련 과정은 알고리즘 1에 다음과 같이 제시되어 있�
 
 ![Untitled 15](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/133b0afe-784b-4b90-b541-01ad6f1c1973)
 
-- $p_ t \propto \sqrt{ E[ \mathcal L_ {t^ 2}] }  / \sqrt{ \sum _{t'=1}^ {T} E[ \mathcal {L} _{t'}^ {2}] }$는 표본 추출 확률을 나타낸다.
-- $\sum_ {t=1}^ T p_t = 1$
+- $p_ t \propto \sqrt{ E[ \mathcal L_ {t^ 2}] }  / \sqrt{ \sum E[ \mathcal {L} _{t'}^ {2}] }$는 표본 추출 확률을 나타낸다.
+- $\sum p_t = 1$
 
-$E[ \mathcal {L} _{t^ {2}}]$를 계산하기 위해, 훈련 중 열 개의 $\mathcal {L}_ {t}$를 모으고 평균을 취한다. 충분한 $\mathcal {L}_ {t}$를 얻기 전까지는 균등 표본 추출을 이용한다. 직관적으로, 큰 $\mathcal L _t$ 값을 갖는 시간 단계는 더 쉽게 추출될 것이다.
+$E[ \mathcal {L}_ {t^ {2}}]$를 계산하기 위해, 훈련 중 열 개의 $\mathcal {L}_ {t}$를 모으고 평균을 취한다. 충분한 $\mathcal {L}_ {t}$를 얻기 전까지는 균등 표본 추출을 이용한다. 직관적으로, 큰 $\mathcal L _t$ 값을 갖는 시간 단계는 더 쉽게 추출될 것이다.
 
 ## 3.3 DiffRec Inference
 
