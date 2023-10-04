@@ -235,7 +235,7 @@ $E[ \mathcal {L}_ {t^ {2}}]$를 계산하기 위해, 훈련 중 열 개의 $\mat
 1. 훈련 중, DiffRec은 개인화된 정보를 보유하기 위해 사용자의 상호 작용을 순수한 잡음으로 오염시키지 않는다. 즉, 잠재 변수 $x_ T$는 광범위한 개인화된 특성을 잃는 표준 가우시안 잡음으로 접근하지 않는다. 
 2. 그들은 추론을 위해 $T' < T$를 조절하는 것으로 더하는 잡음을 줄인다. 
 
-### $x_ {0}$-ELBO
+### x0-ELBO
 
 DiffRec은 $\epsilon$ 대신 $x_ 0$을 예측하는 것으로 최적화된다. 그 이유는 다음과 같다.
 
@@ -248,8 +248,8 @@ DiffRec과 같은 생성 모형은 모든 아이템에 대해 동시에 상호 �
 
 ### Encoding for compression
 
-- 주어진 아이템 세트 $\mathcal I$에 대해, L-DiffRec은 먼저 k-평균 알고리즘을 적용하여 아이템을 $C$개의 범주로 클러스터링한다. 이는 $\{ \mathcal{ I }_ 1,\mathcal{ I }_ 2, \dots, \mathcal{ I }_ C\}$와 같이 나타난다.
-- L-DiffRec은 그 다음 사용자의 상호 작용 벡터 $x_ 0$를 클러스터에 따라 $C$개의 부분으로 나눈다. 이는 $x_ 0 \rightarrow \{x_ 0^ c\} ^ C_ {c=1}$와 같이 나타난다.
+- 주어진 아이템 세트 $\mathcal I$에 대해, L-DiffRec은 먼저 k-평균 알고리즘을 적용하여 아이템을 $C$개의 범주로 클러스터링한다. 이는 $[ \mathcal{ I }_ 1,\mathcal{ I }_ 2, \dots, \mathcal{ I }_ C]$와 같이 나타난다.
+- L-DiffRec은 그 다음 사용자의 상호 작용 벡터 $x_ 0$를 클러스터에 따라 $C$개의 부분으로 나눈다. 이는 $x_ 0 \rightarrow [x_ 0^ c] ^ C_ {c=1}$와 같이 나타난다.
     - $x_ 0^ c$는 $\mathcal{ I }_ c$에 대해 사용자 $u$의 상호 작용을 나타낸다.
 - 이후, $\phi_ c$로 매개 변수화된 변분 인코더를 사용하여 각 $x_ 0^ c$를 저-차원 벡터 $z_0 ^c$로 압축한다. 이때, 인코더는 $\mu_ {\phi_ c}$와 $\sigma^2_ {\phi_ c}I$를 변분 분포의 평균과 공분산으로써 예측한다.
 
@@ -260,17 +260,17 @@ DiffRec과 같은 생성 모형은 모든 아이템에 대해 동시에 상호 �
 
 ### Latent diffusion
 
-$\{ z_ 0^ c \}^ C_ {c=1}$을 합치는 것으로 압축된 $z_ 0$을 얻을 수 있고 이를 확산 모형에 활용할 수 있다. DiffRec를 훈련할 때처럼, $x_ 0$를 $z_ 0$로 대체하여 잠재 공간에서 순방향과 역방향 과정을 수행한다. 식 (13)과 유사하게, 이 경우에도 최적화 손실 함수는 $\mathcal L(z_ 0, \theta) = E_ {t \sim U(1, T)} \mathcal L_ t$와 같다. $\theta$는 잡음 제거 MLP의 모수를 나타낸다.
+$[ z_ 0^ c ]^ C_ {c=1}$을 합치는 것으로 압축된 $z_ 0$을 얻을 수 있고 이를 확산 모형에 활용할 수 있다. DiffRec를 훈련할 때처럼, $x_ 0$를 $z_ 0$로 대체하여 잠재 공간에서 순방향과 역방향 과정을 수행한다. 식 (13)과 유사하게, 이 경우에도 최적화 손실 함수는 $\mathcal L(z_ 0, \theta) = E_ {t \sim U(1, T)} \mathcal L_ t$와 같다. $\theta$는 잡음 제거 MLP의 모수를 나타낸다.
 
 ### Decoding
 
-그림 3에서 나타나 있듯, 역방향 과정으로부터 복원된 $\hat {z}_ 0$을 아이템 클러스터에 따라 $\{\hat {z}_ 0^ c \}^ C_ {c=1}$와 같이 분해한다. 각 $\hat {z}_ 0^ c$ 는 이후 $\psi_ c$로 매개 변수화된 디코더를 통과하여 $p_ {\psi_ c} ( \hat { x }_ 0^ c \vert \hat { z }_ 0^ c )$를 통해 $\hat x_ 0$을 예측한다. 
+그림 3에서 나타나 있듯, 역방향 과정으로부터 복원된 $\hat {z}_ 0$을 아이템 클러스터에 따라 $[\hat {z}_ 0^ c ]^ C_ {c=1}$와 같이 분해한다. 각 $\hat {z}_ 0^ c$ 는 이후 $\psi_ c$로 매개 변수화된 디코더를 통과하여 $p_ {\psi_ c} ( \hat { x }_ 0^ c \vert \hat { z }_ 0^ c )$를 통해 $\hat x_ 0$을 예측한다. 
 
 ![Untitled 17](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/7c9c4453-a4e5-4395-afcf-56b3337adcb4)
 
 ### Training
 
-직관적으로, 인코더 $q_ {\phi_ c}$와 디코더 $p_ {\psi_ c}$는 결합적으로 VAE를 구축한다. 이는 상호 작용 공간과 잠재 공간을 연결한다. $\phi = \{ \phi_ c \}_ {c=1}^ C$와 $\psi = \{ \psi_ c \}_ {c=1}^ C$를 가진 VAE의 집합은 다음의 손실 함수를 통해 최적화될 수 있다.
+직관적으로, 인코더 $q_ {\phi_ c}$와 디코더 $p_ {\psi_ c}$는 결합적으로 VAE를 구축한다. 이는 상호 작용 공간과 잠재 공간을 연결한다. $\phi = [ \phi_ c ]_ {c=1}^ C$와 $\psi = [ \psi_ c ]_ {c=1}^ C$를 가진 VAE의 집합은 다음의 손실 함수를 통해 최적화될 수 있다.
 
 ![Untitled 18](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/3c5c26a3-6597-4410-af7d-2ce88d2332d8)
 
@@ -280,9 +280,9 @@ $\{ z_ 0^ c \}^ C_ {c=1}$을 합치는 것으로 압축된 $z_ 0$을 얻을 수 
 
 ### Inference
 
-1. 추론을 위해, L-DiffRec은 우선 $x_ 0$을 $x_ 0 \rightarrow \{x_ 0^ c\} ^ C_ {c=1}$로 분해한다. 
+1. 추론을 위해, L-DiffRec은 우선 $x_ 0$을 $x_ 0 \rightarrow [x_ 0^ c] ^ C_ {c=1}$로 분해한다. 
 2. 각 $x_ 0^ c$를 분산을 고려하지 않은 결정론적 변수 $z_ 0^ c = \mu_ {\phi_ c}(x_ 0^ c)$로 압축한다. 
-3. L-DiffRec은 DiffRec이 하는 것처럼 $\{z_ 0^ c\} ^ C_ {c=1}$를 $z_ 0$로 합친다.
+3. L-DiffRec은 DiffRec이 하는 것처럼 $[z_ 0^ c] ^ C_ {c=1}$를 $z_ 0$로 합친다.
 4. 복원된 $\hat z_ 0$을 디코더에 넣는 것으로, 아이템의 순위를 정하고 추천을 생성하기 위한 $\hat { x }_ 0$을 얻을 수 있다.
 
 ## Temporal Diffusion
@@ -297,11 +297,11 @@ $\{ z_ 0^ c \}^ C_ {c=1}$을 합치는 것으로 압축된 $z_ 0$을 얻을 수 
 - 시간-인지 선형 스케줄은 $w_ m = w_ {\min} + {m - 1 \over M - 1 }(w_ {\max} - w_ {\min})$과 같다.
     - 두 개의 하이퍼-파라미터 $w_ {\min} < w_ {\max} \in (0, 1]$은 상호 작용 가중의 하한과 상한을 나타낸다.
 - 그 후, 사용자 $u$의 상호 작용 과거 $x_ 0$는 $\bar x_ 0 = x_ 0 \odot \bar w$와 같이 다시 가중치를 부여 받는다.
-    - $\bar w \in \R^ {\lvert I \rvert}$는 $w$에 의해 계산된 가중치 벡터이다. 즉, 다음과 같다.
+    - $\bar w \in R^ {\lvert I \rvert}$는 $w$에 의해 계산된 가중치 벡터이다. 즉, 다음과 같다.
         
         ![Untitled 19](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/ccbfac4d-42af-4d23-b041-d2f6d646727d)
 
-    - Idx$(i)$는 사용자 $u$의 상호 작용 시퀀스 $S$ 내에서 아이템 $i$의 인덱스를 나타낸다.
+    - Idx$ (i) $는 사용자 $u$의 상호 작용 시퀀스 $S$ 내에서 아이템 $i$의 인덱스를 나타낸다.
 - 다시 가중된 상호 작용 과거 $\bar x_ 0$을 DiffRec과 L-DiffRec에 넣는 것으로 T-DiffRec과 LT-DiffRec을 얻을 수 있다. 이들은 상대적으로 시간적 정보를 사용한다.
 
 # 4. Experiments
