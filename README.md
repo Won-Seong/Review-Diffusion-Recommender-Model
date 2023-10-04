@@ -80,7 +80,7 @@ Diffusion Recommender Model
 - 사전 매칭 항(prior matching term)은 상수이므로 최적화 과정에서 무시할 수 있다.
 - 잡음 제거 매칭 항(denoising matching term)은 $p_ \theta(x_ {t-1} \vert x_ t)$를 계산 가능한 참(ground-truth) 전이 단계 $q( x_ {t-1} \vert x_ t, x_ 0)$과 최대한 같아지도록 조정한다.
 - $\theta$는 $x_ t$로부터 $x_ {t-1}$을 반복적으로 복원하기 위해 최적화된다.
-- 잡음 제거 매칭 항은 $\sum^ {T}_ {t=2} {E_ {t, \epsilon} {[ \lVert \epsilon - \epsilon_ \theta (x_ t, t) \rVert ^ 2 _ 2 ]}}$으로 간단하게 쓸 수 있다.
+- 잡음 제거 매칭 항은 $\sum_{t=2}^T {E_ {t, \epsilon} {[ \lVert \epsilon - \epsilon_ \theta (x_ t, t) \rVert ^ 2 _ 2 ]}}$으로 간단하게 쓸 수 있다.
     - $\epsilon \sim N(0 , I)$
     - $\epsilon_ \theta(x_ t, t)$는 $\epsilon$을 예측하기 위해 신경망에 의해 매개 변수화된다. 이 $\epsilon$은 순방향 과정에서 $x_ 0$에서 $x_ t$를 결정하기 위해 쓰인다.
 
