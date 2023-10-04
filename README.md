@@ -33,8 +33,7 @@ Diffusion Recommender Model
 - 이러한 순방향 과정은 계산 가능한 사후 분포로 이어지며, 역방향 과정에서 유연한(flexible) 신경망을 통해 복잡한 분포를 반복적으로 모델링하는 방법을 제시하였다.
 - **추천 모델의 목적은 확산 모형과 잘 일치**하는데, 왜냐하면 **추천 모형은 본질적으로 손상(corrupted)된 과거의 상호 작용을 기반으로 미래의 상호 작용 확률을 추론**하기 때문이다. 이 경우, **손상은 거짓 양성(false-positive)과 거짓-음성(false-negative)에 의해 오염된 상호 작용을 암시**한다. 그림 1(c)에서 이를 확인할 수 있다.
 
-![Untitled 1](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/d299bf84-8a92-4954-8f39-3d5e38c4adb9)
-
+![Untitled](Diffusion%20Recommender%20Model%207a4de6674a3448b29b15ce3e8e96bdd4/Untitled.png)
 
 ## 1.3 DiffRec
 
@@ -322,6 +321,42 @@ $\{ z_ 0^ c \}^ C_ {c=1}$을 합치는 것으로 압축된 $z_ 0$을 얻을 수 
 - 연구 질문 2: L-DiffRec은 추천 정확도와 비용에 대해 어떻게 작동하는가?
 - 연구 질문 3: T-DiffRec은 훈련 중에 상호 작용 타임 스탬프를 이용할 수 있을 때, 순차적 추천 모형(sequential recommender models)을 능가할 수 있는가?
 
+## 4.1 Analysis of DiffRec (RQ1)
+
+### Clean training
+
+DiffRec은 세 가지 데이터에 대해 우수한 성능을 보였다. 성능이 향상된 이유는 다음과 같이 생각할 수 있다.
+
+1. DiffRec은 복잡한 분포에 대한 모델링을 더 잘할 수 있다.
+2. DiffRec은 VAE 기반 모델과는 달리 계산 가능성과 표현력 사이의 상충 관계를 완화할 수 있다.
+3. 설계한 잡음 스케줄이 개인화 선호 모델링을 보장한다.
+
+### Noisy training
+
+실제 추천에서는 사용자의 상호 작용이 거짓 양성과 거짓 음성을 포함한다. DiffRec은 이러한 상황에서도 나은 성능을 보였다. 이러한 결과는 합리적인데, 왜냐하면 거짓-양성 상호 작용이 본질적으로는 오염된 상호 작용이며 DiffRec은 이러한 오염으로부터 반복적으로 깨끗한 상호 작용을 복원하기 때문이다. 
+
+## 4.2 Analysis of L-DiffRec (RQ2)
+
+### Clean training
+
+L-DiffRec은 기존의 모델보다 훨씬 더 향상된 성능을 보였으며 소모한 비용은 훨씬 적었다. 이러한 소모 비용의 절감은 다음과 같은 이유에서 온다고 생각할 수 있다.
+
+1. 아이템 클러스터링이 인코더와 디코더의 모수를 감소시킨다.
+2. 잠재 확산 과정이 잡음 제거 MLP의 모수를 줄인다.
+
+이러한 결과가 말하는 건, L-DiffRec이 산업 현장에서 대규모 아이템 예측을 가능케 할 수 있다는 것이다.
+
+### Noisy training
+
+요구되는 자원은 noisy training과 clean training이 같은 반면, L-DiffRec이 DiffRec보다 noisy training에서 더 나은 성능을 보이는 것을 그들은 관찰하였다. 이러한 현상이 관찰되는 한 가지 가능한 이유를 아이템 클러스터링을 통해 표현 압축을 하면 잡음이 줄어드는 효과 때문이라고 생각할 수 있다.
+
+## 4.3 Analysis of T-DiffRec (RQ3)
+
+1. T-DiffRec과 LT-DIffRec은 시간적 모델링 상황에서 DiffRec과 L-DiffRec보다 나은 성능을 보였다.
+2. 또한, 현재 SOTA 모델인 ACVAE보다 T-DiffRec과 LT-DiffRec은 더 정확하고 강건한 성능을 보였다. 
+3. 또한, 더 많은 모수에도 불구하고 DiffRec 기반 기법들은 ACVAE보다 더 적은 GPU 메모리를 사용하였다. 즉, 더 적은 컴퓨팅 비용을 사용하였다.
+4. LT-DiffRec은 더 적은 모수를 갖고 있음에도 T-DiffRec과 비교될 수 있는 성능을 보였다.
+
 # 5. Conclusion and Future Work
 
 ## Conclusion
@@ -338,3 +373,18 @@ $\{ z_ 0^ c \}^ C_ {c=1}$을 합치는 것으로 압축된 $z_ 0$을 얻을 수 
     - L-DiffRec과 T-DiffRec은 간단하고 효과적이다. 그렇지만 더 나은 압축과 시간 정보를 인코딩하기 위해 더 나은 전략을 고안할 수 있다.
     - DiffRec에 기반한 조건부 추천을 연구하는 것 역시 의미가 있다.
     - 더 나은 사전 가정, 예를 들어 가우시안 잡음 외의 다른 잡음과 같은 가정과 다양한 모형의 효과를 탐구하는 것 역시 흥미로운 일이다.
+ 
+---
+
+  
+
+# Author Information
+
+
+- Name : SeongWon Kim(김성원)
+
+- Master student in StatHT, Graduate School of Data Science, KAIST
+
+- Email : ksw888@kaist.ac.kr
+
+- github : https://github.com/Won-Seong/
