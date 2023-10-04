@@ -1,4 +1,4 @@
-![Untitled](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/ffc5e4a5-7cf5-4e6f-a4d4-7ef489fac000)# Diffusion Recommender Model
+# Diffusion Recommender Model
 
 # Title
 
@@ -75,7 +75,7 @@ Diffusion Recommender Model
 
 확산 모형은 관측된 입력 데이터 $x_ 0$의 가능도의 증거 하한(Evidence Lower BOund, ELBO)을 최대화하는 것으로 최적화된다.
 
-![Untitled 1](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/0da36b63-6745-4692-96ed-e4748f5fe373)
+![Untitled 1](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/cabd7b53-e67a-4c25-9e3a-3efa4cbf8ac8)
 
 - 복원 항(reconstruction term)은 $x_0$에 대한 음의 복원 오차(negative reconstruction error)를 의미한다.
 - 사전 매칭 항(prior matching term)은 상수이므로 최적화 과정에서 무시할 수 있다.
@@ -107,7 +107,7 @@ $\theta$를 학습한 이후, 확산 모형은 $x_T \sim N(0, I)$를 추출하�
 
 ## 3.1 Forward and Reverse Processes
 
-![Untitled 2](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/c053664d-4ea8-4715-a19d-8807d73ac034)
+![Untitled 2](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/482ce1ae-ac1c-402e-979c-d70b3c298523)
 
 그림 2에서 볼 수 있듯, DiffRec은 두 가지 중요한 과정을 가진다.
 
@@ -121,18 +121,18 @@ $\theta$를 학습한 이후, 확산 모형은 $x_T \sim N(0, I)$를 추출하�
     - $x_ u^ i=1\ or\ 0$은 사용자 $u$가 아이템 $i$와 상호 작용을 했는지, 아닌지를 나타낸다.
 - $x_ 0 = x_ u$를 초기 상태로 두고 전이 확률을 다음과 같이 매개 변수화할 수 있다.
 
-![Untitled 3](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/27906d02-d229-4f33-8c55-0e7229197e71)
+![Untitled 3](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/44ed4fc7-2431-4046-ba41-d2ee0eae8303)
 
 - $\beta_ t \in (0, 1)$은 각 시간 단계 $t$에서 더해지는 가우시안 잡음의 정도를 조절한다.
 - 재매개 변수화 기법(reparameterization trick)을 이용하면 $x_ 0$로부터 $x_ t$를 직접적으로 얻을 수 있다.
 
-![Untitled 4](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/f63431a7-4649-44de-855e-5ef85c16428b)
+![Untitled 4](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/1a50342a-29ae-4004-a262-4f0ce5d453f7)
 
 - $\alpha_ t = 1 - \beta_ t, \bar{ \alpha }_ t = \prod {\alpha_ t'}$
 - $x_ {t} = \sqrt{ \bar{ \alpha } }_ t x_ 0 + \sqrt{ 1 - \bar \alpha_ t }\epsilon,\ \epsilon \sim N(0, I)$
 - $x_ {1:T}$에서 더해지는 잡음을 제한하기 위해, 다음과 같이 선형 잡음 스케줄을 설계한다.
 
-![Untitled 5](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/ee5c911d-14b5-4547-89e6-0ab505f5dc5d)
+![Untitled 5](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/10a216a3-0a67-4085-ad3f-7ab0b7310456)
 
 - 하이퍼 파라미터 $s \in [0, 1]$은 잡음의 정도를 조절한다.
 - 하이퍼 파라미터 $\alpha_ {\min} < \alpha_ {\max} \in (0, 1)$은 더해지는 잡음의 상한과 하한을 지시한다.
@@ -141,7 +141,7 @@ $\theta$를 학습한 이후, 확산 모형은 $x_T \sim N(0, I)$를 추출하�
 
 - $x_ T$에서부터 시작하여, 역방향 과정은 잡음 제거 전이 과정을 통해 점진적으로 사용자의 상호 작용을 복원한다.
 
-![Untitled 6](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/f015914b-52bc-4856-aa45-8453d90759fa)
+![Untitled 6](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/233f6736-6bd6-4ef7-9306-dae3354806d3)
 
 - $\mu_ \theta(x_ t, t), \Sigma_ \theta(x_ t, t)$는 학습 가능한 $\theta$를 포함하는 신경망에 의해 출력되는 가우시안 모수다.
 
@@ -149,7 +149,7 @@ $\theta$를 학습한 이후, 확산 모형은 $x_T \sim N(0, I)$를 추출하�
 
 $\theta$를 학습하기 위해, DiffRec은 관측된 사용자의 상호 작용 $x_ 0$의 ELBO를 최대화하는 것을 목표로 한다. 
 
-![Untitled 7](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/6d3d2e49-f878-4d5d-b9de-e44cc90ad66b)
+![Untitled 7](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/68b49d76-ab61-4569-9b5d-2b07a6bc2f08)
 
 - 식 (1)에 존재하는 사전 매칭 항은 상수이기 때문에 위 식에서 제거되었다.
 - 복원 항은 $x_ 0$의 복원 확률을 측정한다.
@@ -160,26 +160,26 @@ $\theta$를 학습하기 위해, DiffRec은 관측된 사용자의 상호 작용
 
 잡음 제거 매칭 항은 KL 발산을 이용해 $p_ \theta(x_ {t-1} \vert x_ t)$가 계산 가능한 분포 $q( x_ {t-1} \vert x_ t, x_ 0)$와 근사적으로 같아지도록 한다. 베이즈 규칙에 의해, $q( x_ {t-1} \vert x_ t, x_ 0)$는 다음과 같이 닫힌 식으로 다시 쓸 수 있다.
 
-![Untitled 8](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/45ea5b78-cd72-4d21-83af-edf25c1ee804)
+![Untitled 8](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/7fd1a2b2-ac5f-4317-89fd-208992b8e539)
 
 - $\tilde{ \mu } (x_ t,x_ 0, t)$와 $\sigma^ 2 (t) I$는 식 (2)와 (3)으로부터 유도된 $q( x_ {t-1} \vert x_ t, x_ 0)$의 평균과 공분산이다.
 - 안정적인 훈련과 계산을 간단하게 만들기 위해 $\Sigma_ \theta (x_ t, t) = \sigma^ 2(t) I$로 직접적으로 설정한다.
 
 시간 $t$에서 잡음 제거 매칭 항 $L_t$은 다음과 같이 계산된다.
 
-![Untitled 9](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/c804dc71-934e-4664-89ec-d8a07b44a193)
+![Untitled 9](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/58f6b950-9336-45ac-89ef-635119966892)
 
 - 이는 $\mu_ \theta (x_ t, t)$가 $\tilde{ \mu } (x_ t,x_ 0,t )$와 같아지도록 한다.
 
 식 (8)에 의해, $\mu_ \theta (x_ t, t)$를 다음과 같이 분해할 수 있다. 
 
-![Untitled 10](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/74686c02-d25c-4d91-a6da-3f4a8af73bd9)
+![Untitled 10](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/09f42ed7-fa98-489d-abae-dc9db3fa6597)
 
 - $\hat{ x }_ \theta(x_ t, t)$는 $x_ t, t$를 기반으로 예측한 $x_0$이다.
 
 게다가, 식 (10)과 (8), (9)를 이용하면 다음을 얻을 수 있다.
 
-![Untitled 11](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/30b44160-e7d2-4974-8a74-f225eadd3809)
+![Untitled 11](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/bd9d8dbf-c799-43ce-9ffa-7c2adb597dec)
 
 - 이는 $\hat{ x }_ \theta (x_ t, t)$가 $x_ 0$를 정확하게 예측하도록 한다.
 
@@ -189,7 +189,7 @@ $\theta$를 학습하기 위해, DiffRec은 관측된 사용자의 상호 작용
 
 $\mathcal {L_ 1}$을 식 (6)에 있는 복원 항의 음의 값이라고 정의하고, 이를 다음과 같이 계산할 수 있다.
 
-![Untitled 12](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/991616c1-314a-4f9c-9fe5-7fcb9d2bd8bd)
+![Untitled 12](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/de0d6854-a68a-423f-abd3-83bdc695438f)
 
 - 가우시안 로그-가능도 $\log{ p(x_ 0 \vert x_ 1) }$를 $-\lVert \hat{ x }_ \theta (x_ 1,1 )-x_ 0 \rVert^ 2_ 2$로 추정한다.
 
@@ -197,17 +197,17 @@ $\mathcal {L_ 1}$을 식 (6)에 있는 복원 항의 음의 값이라고 정의�
 
 식 (11)과 식 (12)에 의하면, 식 (6)에 있는 ELBO는 $\mathcal{ L }_ 1 - \sum_ {\mathcal L_ t}$로 쓸 수 있다. 그러므로, ELBO를 최대화하기 위해서 $\sum \mathcal{ L }_ t$를 최소화하는 것으로 $\hat{ x }_ {\theta} (x_ {t}, t)$ 안의 $\theta$를 최적화할 수 있다. 실제 구현에서는 균등하게 시간 단계 $t \sim U(1, T)$를 추출하여 기댓값 $\mathcal { L }(x_ 0, \theta)$를 최적화한다. 
 
-![Untitled 13](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/2af2ba86-75d6-4d02-9e1e-4ac7c492e560)
+![Untitled 13](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/711dc29e-6725-4ea9-9ef0-309a61cdf08e)
 
 DiffRec의 훈련 과정은 알고리즘 1에 다음과 같이 제시되어 있다.
 
-![Untitled 14](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/e49ab585-1b95-4550-8be9-7be48fe6138a)
+![Untitled 14](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/e1272155-da3f-4bf7-b0da-60b5cc1f5ea6)
 
 ### Importance sampling
 
 최적화 문제는 다른 시간 단계마다 다양할 수 있다. 따라서 그들은 큰 손실 값 $\mathcal L _t$를 갖는 시간 단계에 대해 학습을 강조하기 위해 중요도 샘플링(importance sampling)을 고려한다. 형식적으로, 그들은 $t$에 대한 새로운 표본 추출 전략을 사용한다.
 
-![Untitled 15](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/133b0afe-784b-4b90-b541-01ad6f1c1973)
+![Untitled 15](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/dc49a104-3cd7-4b7f-92f6-254664ae4804)
 
 - $p_ t \propto \sqrt{ E[ \mathcal L_ {t^ 2}] }  / \sqrt{ \sum E[ \mathcal {L} _{t'}^ {2}] }$는 표본 추출 확률을 나타낸다.
 - $\sum p_t = 1$
@@ -225,7 +225,7 @@ $E[ \mathcal {L}_ {t^ {2}}]$를 계산하기 위해, 훈련 중 열 개의 $\mat
 
 마지막으로, 그들은 아이템의 순위를 정하고 가장 높은 순위의 아이템을 추천하기 위해 $\hat x_ 0$을 사용한다. 추론 과정은 다음과 같이 알고리즘 2에 요약이 되어 있다. 
 
-![Untitled 16](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/d7c1258f-c4bc-48af-aca1-2aa5fc1396eb)
+![Untitled 16](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/6af592eb-91cf-4ffb-8213-4d5f40a7b3a8)
 
 ## 3.4 Discussion
 
@@ -267,13 +267,13 @@ $[ z_ 0^ c ]^ C_ {c=1}$을 합치는 것으로 압축된 $z_ 0$을 얻을 수 �
 
 그림 3에서 나타나 있듯, 역방향 과정으로부터 복원된 $\hat {z}_ 0$을 아이템 클러스터에 따라 $[\hat {z}_ 0^ c ]^ C_ {c=1}$와 같이 분해한다. 각 $\hat {z}_ 0^ c$ 는 이후 $\psi_ c$로 매개 변수화된 디코더를 통과하여 $p_ {\psi_ c} ( \hat { x }_ 0^ c \vert \hat { z }_ 0^ c )$를 통해 $\hat x_ 0$을 예측한다. 
 
-![Untitled 17](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/7c9c4453-a4e5-4395-afcf-56b3337adcb4)
+![Untitled 17](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/e47fa6a5-f9a0-4555-a24c-a28428d2bec8)
 
 ### Training
 
 직관적으로, 인코더 $q_ {\phi_ c}$와 디코더 $p_ {\psi_ c}$는 결합적으로 VAE를 구축한다. 이는 상호 작용 공간과 잠재 공간을 연결한다. $\phi = [ \phi_ c ]_ {c=1}^ C$와 $\psi = [ \psi_ c ]_ {c=1}^ C$를 가진 VAE의 집합은 다음의 손실 함수를 통해 최적화될 수 있다.
 
-![Untitled 18](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/3c5c26a3-6597-4410-af7d-2ce88d2332d8)
+![Untitled 18](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/fb80ff7c-f766-49f2-b998-6460bf209afd)
 
 - $\gamma$는 KL 규제(regularization)의 강도를 조절한다.
 
@@ -300,7 +300,7 @@ $[ z_ 0^ c ]^ C_ {c=1}$을 합치는 것으로 압축된 $z_ 0$을 얻을 수 �
 - 그 후, 사용자 $u$의 상호 작용 과거 $x_ 0$는 $\bar x_ 0 = x_ 0 \odot \bar w$와 같이 다시 가중치를 부여 받는다.
     - $\bar w \in R^ {\lvert I \rvert}$는 $w$에 의해 계산된 가중치 벡터이다. 즉, 다음과 같다.
         
-        ![Untitled 19](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/ccbfac4d-42af-4d23-b041-d2f6d646727d)
+        ![Untitled 19](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/d23dfaa2-53ff-4c2b-a2eb-831bf7eb31f8)
 
     - Idx(i)는 사용자 $u$의 상호 작용 시퀀스 $S$ 내에서 아이템 $i$의 인덱스를 나타낸다.
 - 다시 가중된 상호 작용 과거 $\bar x_ 0$을 DiffRec과 L-DiffRec에 넣는 것으로 T-DiffRec과 LT-DiffRec을 얻을 수 있다. 이들은 상대적으로 시간적 정보를 사용한다.
