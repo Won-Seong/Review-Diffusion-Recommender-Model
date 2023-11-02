@@ -1,3 +1,4 @@
+
 ---
 title:  "[SIGIR 2023] Diffusion Recommender Model"
 permalink: 2023-10-16-Diffusion_Recommender_Model.html
@@ -10,57 +11,57 @@ usemathjax: true
 
 # Title
 
-Diffusion Recommender Model
+**Diffusion Recommender Model**
 
 ## 1. Introduction
 
 ## 1.1 Motivation
 
-**생성 모형은 개인 맞춤형 추천(personalized recommendation)에 널리 사용**이 되어 왔다. 일반적으로, **생성 추천 모형(generative recommender models)은 상호 작용(interaction)을 하지 않는 모든 아이템에 대해 사용자의 상호 작용 확률을 추론하는 생성 과정을 학습**한다. 이러한 생성 추천 모형은 실제 세계의 상호 작용 생성 절차와 일치하여 상당한 성공을 거두었다.
+**생성 모형은 개인 맞춤형 추천(*personalized recommendation*)에 널리 사용**이 되어 왔다. 일반적으로, **생성 추천 모형(*generative recommender models*)은 상호 작용(*interaction*)을 하지 않는 모든 아이템에 대해 사용자의 상호 작용 확률을 추론하는 생성 과정을 학습**한다. 이러한 생성 추천 모형은 실제 세계의 상호 작용 생성 절차와 일치하여 상당한 성공을 거두었다.
 
 생성 추천 모형은 주로 두 그룹으로 나뉜다.
 
-- GAN 기반 모형: **사용자의 상호 작용 확률을 추정하고 적대적 훈련(adversarial training)을 활용하여 최적의 매개변수**를 찾는다. 그러나, **적대적 훈련은 일반적으로 불안정**하며 이는 만족스럽지 않은 성능으로 이어진다.
-- VAE 기반 모형: **인코더를 사용하여 잠재 요인(latent factors)에 대한 사후 분포를 근사하고 관측된 상호 작용의 가능도를 최대화**한다. VAE 기반 모형은 추천 시스템에서 일반적으로 GAN 기반 모형보다 나은 성능을 보이지만 **계산의 용이성(tractability)과 표현 능력(representation ability) 사이에 상충 관계**로 어려움을 겪는다.
+- GAN 기반 모형: **사용자의 상호 작용 확률을 추정하고 적대적 훈련(*adversarial training*)을 활용하여 최적의 매개변수**를 찾는다. 그러나, **적대적 훈련은 일반적으로 불안정**하며 이는 만족스럽지 않은 성능으로 이어진다.
+- VAE 기반 모형: **인코더를 사용하여 잠재 요인(*latent factors*)에 대한 사후 분포를 근사하고 관측된 상호 작용의 가능도를 최대화**한다. VAE 기반 모형은 추천 시스템에서 일반적으로 GAN 기반 모형보다 나은 성능을 보이지만 **계산의 용이성(*tractability*)과 표현 능력(*representation ability*) 사이에 상충 관계**로 어려움을 겪는다.
 
 ### 1.2 Diffusion Models
 
-확산 모형(Diffusion Models, DMs)은 이미지 합성 작업에서 SOTA를 달성한 또 하나의 생성 모형이다. 이는 다음과 같은 특징을 갖는다.
+확산 모형(*Diffusion Models*, DMs)은 이미지 합성 작업에서 SOTA를 달성한 또 하나의 생성 모형이다. 이는 다음과 같은 특징을 갖는다.
 
 - VAE가 갖는 상충 관계를, **계산 가능한 순방향 과정을 통해 이미지를 점진적으로 오염시키고 이를 반복적으로 복원하는 방법을 학습**하는 것으로 완화하였다.
 - 그림 1(b)에서 볼 수 있듯, 확산 모형은 먼저 $x_0$를 임의의 잡음으로 점진적으로 오염시킨다. 이후, 오염된 $x_ T$로부터 $x_ 0$를 복원시킨다.
-- 이러한 순방향 과정은 계산 가능한 사후 분포로 이어지며, 역방향 과정에서 유연한(flexible) 신경망을 통해 복잡한 분포를 반복적으로 모델링하는 방법을 제시하였다.
+- 이러한 순방향 과정은 계산 가능한 사후 분포로 이어지며, 역방향 과정에서 유연한(*flexible*) 신경망을 통해 복잡한 분포를 반복적으로 모델링하는 방법을 제시하였다.
 
-추천 모형의 목적은 확산 모형과 잘 일치한다. 왜냐하면 추천 모형은 본질적으로 손상(corrupted)된 과거의 상호 작용을 기반으로 미래의 상호 작용 확률을 추론하기 때문이다. 그림 1(c)를 보면 더욱 쉽게 이해할 수 있다. 추천 모형은 사용자의 과거의 상호 작용(histrocial interactions)에 기반하여 미래의 상호 작용(future interactions)을 예측하고자 한다. 과거의 상호 작용이 깨끗한 데이터라면 이러한 접근은 매우 쉽다. 그러나, 일반적으로 과거의 상호 작용은 손상이 되어 있다. 이 경우 손상은 거짓 양성(false-positive)과 거짓-음성(false-negative)에 의해 오염된 상호 작용을 암시한다. 예를 들어, 어떤 아이템에 대해 사용자는 긍정적인 상호 작용을 하였지만 실은 그다지 마음에 들지 않았을 수도 있다. 혹은, 부정적인 상호 작용을 하였으나 실제로는 괜찮았을 수도 있다. 이렇게 잡음이 섞인 과거의 상호 작용을 통해 미래의 상호 작용을 만들어 내는 게 추천 모형의 목적이고, 이는 잡음에서 깨끗한 데이터를 만들어 내는 확산 모형의 목적과 합치한다. 따라서, 추천을 위해 확산 모형을 이용하는 건 자연스러운 일이라고 생각할 수 있다. 확산 모형에게는 강력한 표현 능력으로 복잡한 상호 작용을 더 정확하게 포착할 수 있는 잠재력이 있다. 
+**추천 모형의 목적은 확산 모형과 잘 어울**린다. 왜냐하면 **추천 모형은 본질적으로 손상(*corrupted*)된 과거의 상호 작용을 기반으로 미래의 상호 작용 확률을 추론**하기 때문이다. 그림 1(c)를 보면 더욱 쉽게 이해할 수 있다. 추천 모형은 사용자의 과거의 상호 작용(*histrocial interactions*)에 기반하여 미래의 상호 작용(*future interactions*)을 예측하고자 한다. 과거의 상호 작용이 깨끗한 데이터라면 이러한 접근은 매우 쉽다. 그러나, 일반적으로 과거의 상호 작용은 손상이 되어 있다. 이 경우 **손상은 거짓 양성(*false-positive*)과 거짓-음성(*false-negative*)에 의해 오염된 상호 작용을 암시**한다. 예를 들어, 어떤 아이템에 대해 사용자는 긍정적인 상호 작용을 하였지만 실은 그다지 마음에 들지 않았을 수도 있다. 혹은, 부정적인 상호 작용을 하였으나 실제로는 괜찮았을 수도 있다. 이렇게 **잡음이 섞인 과거의 상호 작용을 통해 미래의 상호 작용을 만들어 내는 게 추천 모형의 목적이고, 이는 잡음에서 깨끗한 데이터를 만들어 내는 확산 모형과 매우 어울**린다. 따라서, 추천을 위해 확산 모형을 이용하는 건 자연스러운 일이라고 생각할 수 있다. 확산 모형에게는 강력한 표현 능력으로 복잡한 상호 작용을 더 정확하게 포착할 수 있는 잠재력이 있다. 
 
 ![Untitled](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/6b46ce56-ccd1-4a65-8811-60d9c41c6046)
 
 
 ## 1.3 DiffRec
 
-이 논문에서 그들은 **확산 추천 모형(Diffusion Recommender Model, DiffRec)** 을 제시한다. 이 모형은 다음과 같은 특징을 갖는다. 
+이 논문에서 그들은 **확산 추천 모형(*Diffusion Recommender Model*, DiffRec)** 을 제시한다. 이 모형은 다음과 같은 특징을 갖는다. 
 
-- **잡음을 제거하는(denoising) 관점에서 사용자의 상호 작용 확률을 추론**한다.
-- 기술적으로, DiffRec은 사용자의 상호 작용 과거(interaction histroies)를 **순방향 과정에서 사전에 주어진 가우시안 잡음(scheduled Gaussian noises)을 주입하는 것으로 오염**시킨다.
-- 역방향 과정에서, 매개 변수화된(parameterized) 신경망을 통해 **오염된 상호 작용으로부터 원래의 상호 작용을 복원**한다. 이는 반복적인 과정으로 이루어진다.
+- **잡음을 제거하는(*denoising*) 관점에서 사용자의 상호 작용 확률을 추론**한다.
+- 기술적으로, DiffRec은 사용자의 상호 작용 과거(*interaction histroies*)를 **순방향 과정에서 사전에 주어진 가우시안 잡음(*scheduled Gaussian noises*)을 주입하는 것으로 오염**시킨다.
+- 역방향 과정에서, 매개 변수화된(*parameterized*) 신경망을 통해 **오염된 상호 작용으로부터 원래의 상호 작용을 복원**한다. 이는 반복적인 과정으로 이루어진다.
 - 그러나 이미지 생성에서 사용했던 순방향 과정을 그대로 이용할 수는 없는데, 왜냐하면 개인 맞춤형 추천 생성의 필요성 때문이다. 이미지 생성에서는 순방향 과정에서 이미지가 순수한 잡음이 될 때까지 이를 오염시킨다. 그러나  추천 모형에서는 사용자의 손상된 상호 작용에서 개인화된 정보를 유지하기 위해서는 이를 피해야 한다. 따라서, **순방향 과정에서 추가되는 잡음의 크기를 줄일 필요**가 있다.
 
-한걸음 더 나아가, 추천 시스템을 위한 생성 모형을 구축하는 데에 존재하는 두 가지 본질적인 어려움을 이 논문에서는 다룬다: **대규모 아이템 예측(large-scale item prediction)과 시간 모델링(temporal modeling)** 이다.
+한걸음 더 나아가, 추천 시스템을 위한 생성 모형을 구축하는 데에 존재하는 두 가지 본질적인 어려움을 이 논문에서는 다룬다: **대규모 아이템 예측(*large-scale item prediction*)과 시간 모델링(*temporal modeling*)** 이다.
 
 1. **생성 모형은 동시에 모든 아이템의 상호 작용 확률을 예측하는데, 이는 상당한 자원을 요구**한다. 따라서 대규모 아이템 추천을 위해 생성 모형을 응용하는 게 제한된다.
 2. **생성 모형은 상호 작용 시퀀스에서 시간적 정보를 포착**해야 한다. 이러한 시간적 정보는 사용자의 선호도 변화를 처리하는 데에 중요한 역할을 한다. 
 
-이러한 어려움을 해결하기 위해, 이 논문에서는 DiffRec을 Latent DiffRec(L-DiffRec)과 Temporal DiffRec(T-DiffRec)으로 확장한다. 
+이러한 어려움을 해결하기 위해, 이 논문에서는 DiffRec을 *Latent DiffRec*(L-DiffRec)과 *Temporal DiffRec*(T-DiffRec)으로 확장한다. 
 
-1. **L-DiffRec은 아이템을 그룹으로 클러스터링하고 각 그룹의 상호 작용 벡터를 group-specific VAE를 통해 저차원 잠재 벡터로 압축**한다. 이후, **잠재 공간에서 순방향 과정과 역방향 과정을 수행**한다. **클러스터링과 잠재 확산 덕분에 L-DiffRec은 모형의 모수와 메모리 비용을 상당히 줄이고, 대규모 아이템 예측의 능력을 향상**시킨다. 
-2. **T-DiffRec은 간단하지만 효과적인 time-aware reweighting 전략을 통해 상호 작용 시퀀스를 모델링**한다. 직관적으로, **사용자의 더 나중의 상호 작용은 더 큰 가중치**를 부여 받고, 이는 이후 훈련과 추론을 위해 DiffRec에 입력된다.
+1. **L-DiffRec은 아이템을 그룹으로 클러스터링하고 각 그룹의 상호 작용 벡터를 *group-specific VAE*를 통해 저차원 잠재 벡터로 압축**한다. 이후, **잠재 공간에서 순방향 과정과 역방향 과정을 수행**한다. **클러스터링과 잠재 확산 덕분에 L-DiffRec은 모형의 모수와 메모리 비용을 상당히 줄이고, 대규모 아이템 예측의 능력을 향상**시킨다. 
+2. **T-DiffRec은 간단하지만 효과적인 *time-aware reweighting* 전략을 통해 상호 작용 시퀀스를 모델링**한다. 직관적으로, **사용자의 더 나중의 상호 작용은 더 큰 가중치**를 부여 받고, 이는 이후 훈련과 추론을 위해 DiffRec에 입력된다.
 
 이 논문에서 그들은 세 개의 대표적인 데이터로 실험을 하였으며 다양한 설정에서 DiffRec과 기존에 존재하는 모형을 비교하였다. 
 
 ## 1.4 Summary of introduction
 
 - 그들은 확산 추천 모형을 제시하였으며, 이는 생성 추천 모형의 방향성을 가리키는 완전히 새로운 추천 패러다임이다.
-- 그들은 기존의 확산 모형을 확장하여 고-차원 범주형 예측을 하기 위해 쓰이는 비용을 줄였고 상호 작용 시퀀스의 time-sensitive 모델링을 가능하게 하였다.
+- 그들은 기존의 확산 모형을 확장하여 고-차원 범주형 예측을 하기 위해 쓰이는 비용을 줄였고 상호 작용 시퀀스의 *time-sensitive* 모델링을 가능하게 하였다.
 - 그들은 다양한 설정에서 세 개의 데이터에 대해 실험을 수행하였으며 기존에 존재하는 모형과 DiffRec을 비교하여 놀라운 성능 향상을 보였다.
 
 # 2. Preliminary
@@ -69,9 +70,9 @@ Diffusion Recommender Model
 
 ## 2.1 Forward process
 
-주어진 입력 데이터 표본 $x_0 \sim q(x_0)$에 대해, 순방향 과정은 $T$ 단계 동안 점진적으로 가우시안 잡음을 더하는 것으로 마르코프 연쇄 내에서 잠재 변수 $x_ {1:T}$를 구축한다. 구체적으로 말하면, 확산 모형은 순방향 전이(forward transition) $x_ {t-1} \rightarrow x_ {t}$를 $q(x_ t \vert x_ {t-1}) = N(x_ t; \sqrt{1 - \beta_ t} x_ {t-1}, \beta_ t I)$로 정의한다.
+주어진 입력 데이터 표본 $x_0 \sim q(x_0)$에 대해, 순방향 과정은 $T$ 단계 동안 점진적으로 가우시안 잡음을 더하는 것으로 마르코프 연쇄 내에서 잠재 변수 $x_ {1:T}$를 구축한다. 구체적으로 말하면, 확산 모형은 순방향 전이(*forward transition*) $x_ {t-1} \rightarrow x_ {t}$를 $q(x_ t \vert x_ {t-1}) = N(x_ t; \sqrt{1 - \beta_ t} x_ {t-1}, \beta_ t I)$로 정의한다.
 
-- $t \in \{1, \dots, T\}$는 확산 단계(diffusion step)를 나타낸다.
+- $t \in \{1, \dots, T\}$는 확산 단계(*diffusion step*)를 나타낸다.
 - $N$은 가우시안 분포를 지칭한다.
 - $\beta_ t \in (0, 1)$은 단계 $t$에서 더해지는 잡음의 크기를 조절한다.
 - $T \rightarrow \infty$일 때, $x_ T$는 표준 가우시안 잡음으로 접근한다.
@@ -82,13 +83,13 @@ Diffusion Recommender Model
 
 ## 2.3 Optimization
 
-확산 모형은 관측된 입력 데이터 $x_ 0$의 가능도의 증거 하한(Evidence Lower BOund, ELBO)을 최대화하는 것으로 최적화된다.
+확산 모형은 관측된 입력 데이터 $x_ 0$의 가능도의 증거 하한(*Evidence Lower BOund*, ELBO)을 최대화하는 것으로 최적화된다.
 
 ![Untitled 1](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/cabd7b53-e67a-4c25-9e3a-3efa4cbf8ac8)
 
-- 복원 항(reconstruction term)은 $x_0$에 대한 음의 복원 오차(negative reconstruction error)를 의미한다.
-- 사전 매칭 항(prior matching term)은 상수이므로 최적화 과정에서 무시할 수 있다.
-- 잡음 제거 매칭 항(denoising matching term)은 $p_ \theta(x_ {t-1} \vert x_ t)$를 계산 가능한 참(ground-truth) 전이 단계 $q( x_ {t-1} \vert x_ t, x_ 0)$과 최대한 같아지도록 조정한다.
+- 복원 항(*reconstruction term*)은 $x_0$에 대한 음의 복원 오차(*negative reconstruction error*)를 의미한다.
+- 사전 매칭 항(*prior matching term*)은 상수이므로 최적화 과정에서 무시할 수 있다.
+- 잡음 제거 매칭 항(*denoising matching term*)은 $p_ \theta(x_ {t-1} \vert x_ t)$를 계산 가능한 참(*ground-truth*) 전이 단계 $q( x_ {t-1} \vert x_ t, x_ 0)$과 최대한 같아지도록 조정한다.
 - $\theta$는 $x_ t$로부터 $x_ {t-1}$을 반복적으로 복원하기 위해 최적화된다.
 - 잡음 제거 매칭 항은 $\sum {E_ {t, \epsilon} {[ \lVert \epsilon - \epsilon_ \theta (x_ t, t) \rVert ^ 2 _ 2 ]}}$으로 간단하게 쓸 수 있다.
     - $\epsilon \sim N(0 , I)$
@@ -104,8 +105,8 @@ $\theta$를 학습한 이후, 확산 모형은 $x_T \sim N(0, I)$를 추출하�
 
 - 이는 **잡음이 섞인 상호 작용으로부터 사용자의 미래 상호 작용 확률을 예측**한다.
 - 주어진 사용자의 과거의 상호 작용에 대해, DiffRec은 순방향 과정에서 잡음을 더해 점진적으로 이를 오염시킨다. 그 후, 역방향 과정에서 반복적으로 원래의 상호 작용을 복원하는 방법을 학습한다.
-- 이러한 반복적인 잡음 제거 훈련에 의해, DiffRec은 복잡한 상호 작용 생성 과정을 모델링할 수 있고 잡음이 섞인 상호 작용의 효과를 완화할 수 있다.
-- 결국, 복원된 상호 작용 확률은 상호 작용이 되지 않은 아이템(non-interacted items)에 대해 순위를 매기고 추천을 하는 데에 사용된다.
+- 이러한 반복적인 잡음 제거 훈련에 의해, DiffRec은 **복잡한 상호 작용 생성 과정을 모델링할 수 있고 잡음이 섞인 상호 작용의 효과를 완화**할 수 있다.
+- 결국, **복원된 상호 작용 확률은 상호 작용이 되지 않은 아이템(*non-interacted items*)에 대해 순위를 매기고 추천을 하는 데에 사용**된다.
 
 추가적으로, 그들은 다음의 두 가지 작업을 위한 DiffRec의 확장을 제시한다. 
 
@@ -126,14 +127,14 @@ $\theta$를 학습한 이후, 확산 모형은 $x_T \sim N(0, I)$를 추출하�
 ### Forward process
 
 - 사용자 $u$
-- 아이템 집함 $\mathcal I$에 대한 상호 작용 과거 $x_ u = [ x_ u^ 1, x_ u^ 2, \dots, x_ u^ {\vert \mathcal I \vert} ]$
+- 아이템 집합 $\mathcal I$에 대한 상호 작용 과거 $x_ u = [ x_ u^ 1, x_ u^ 2, \dots, x_ u^ {\vert \mathcal I \vert} ]$
     - $x_ u^ i=1\ or\ 0$은 사용자 $u$가 아이템 $i$와 상호 작용을 했는지, 아닌지를 나타낸다.
 - $x_ 0 = x_ u$를 초기 상태로 두고 전이 확률을 다음과 같이 매개 변수화할 수 있다.
 
 ![Untitled 3](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/44ed4fc7-2431-4046-ba41-d2ee0eae8303)
 
 - $\beta_ t \in (0, 1)$은 각 시간 단계 $t$에서 더해지는 가우시안 잡음의 정도를 조절한다.
-- 재매개 변수화 기법(reparameterization trick)을 이용하면 $x_ 0$로부터 $x_ t$를 직접적으로 얻을 수 있다.
+- 재매개 변수화 기법(*reparameterization trick*)을 이용하면 $x_ 0$로부터 $x_ t$를 직접적으로 얻을 수 있다.
 
 ![Untitled 4](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/1a50342a-29ae-4004-a262-4f0ce5d453f7)
 
@@ -214,7 +215,7 @@ DiffRec의 훈련 과정은 알고리즘 1에 다음과 같이 제시되어 있�
 
 ### Importance sampling
 
-최적화 문제는 다른 시간 단계마다 다양할 수 있다. 따라서 그들은 큰 손실 값 $\mathcal L _t$를 갖는 시간 단계에 대해 학습을 강조하기 위해 중요도 샘플링(importance sampling)을 고려한다. 형식적으로, 그들은 $t$에 대한 새로운 표본 추출 전략을 사용한다.
+최적화 문제는 다른 시간 단계마다 다양할 수 있다. 따라서 그들은 큰 손실 값 $\mathcal L _t$를 갖는 시간 단계에 대해 학습을 강조하기 위해 중요도 샘플링(*importance sampling*)을 고려한다. 형식적으로, 그들은 $t$에 대한 새로운 표본 추출 전략을 사용한다.
 
 ![Untitled 15](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/dc49a104-3cd7-4b7f-92f6-254664ae4804)
 
@@ -227,9 +228,9 @@ $E[ \mathcal {L}_ {t^ {2}}]$를 계산하기 위해, 훈련 중 열 개의 $\mat
 
 이미지 합성 작업에서, 확산 모형은 임의의 가우시안 잡음을 추출하여 역방향 과정에 통과시킨다. 그러나, 상호 작용을 순수 잡음으로 오염시키는 건 추천에서 개인화된 사용자의 선호를 망가뜨린다. 따라서, 그들은 간단한 추론 전략을 제시한다. 이는 DiffRec의 훈련을 상호 작용 예측에 맞추어 조정한다. 
 
-더 자세히 말하자면, DiffRec은 우선 순방향 과정에서 $x_0$을 $x_ 0 \rightarrow x_ 1 \rightarrow \cdots \rightarrow x_ {T'}$와 같은 과정을 통해 오염시킨다. 이후, $\hat x_ T = x_ {T'}$와 같이 설정하고 $\hat x_ T \rightarrow \hat x_ {T-1} \rightarrow \cdots \rightarrow \hat x_ 0$와 같은 역방향 잡음 제거 과정을 수행한다. 이러한 역방향 과정은 분산을 무시하고 결정론적 추론을 위해 $\hat x_ {t-1} = \mu_ \theta(\hat x_ t, t)$ 식 (10)을 통해 활용한다. 특히, 다음의 두 사항을 고려하여, 그들은 순방향 과정에서 $T\' < T$와 같이 설정하여 더하는 잡음을 줄인다. 
+더 자세히 말하자면, DiffRec은 우선 순방향 과정에서 $x_0$을 $x_ 0 \rightarrow x_ 1 \rightarrow \cdots \rightarrow x_ {T'}$와 같은 과정을 통해 오염시킨다. 이후, $\hat x_ T = x_ {T'}$와 같이 설정하고 $\hat x_ T \rightarrow \hat x_ {T-1} \rightarrow \cdots \rightarrow \hat x_ 0$와 같은 역방향 잡음 제거 과정을 수행한다. 이러한 역방향 과정은 분산을 무시하고 결정론적 추론을 위해 $\hat x_ {t-1} = \mu_ \theta(\hat x_ t, t)$ 식 (10)을 통해 활용한다. 특히, 다음의 두 사항을 고려하여, 그들은 순방향 과정에서 $T' < T$와 같이 설정하여 더하는 잡음을 줄인다. 
 
-1. 사용자의 상호 작용은 false-positive와 false-negative 상호 작용 때문에 자연스럽게 잡음이 섞여 있다.
+1. 사용자의 상호 작용은 *false-positive*와 *false-negative* 상호 작용 때문에 자연스럽게 잡음이 섞여 있다.
 2. 개인화된 정보를 함유하고 있다. 
 
 마지막으로, 그들은 아이템의 순위를 정하고 가장 높은 순위의 아이템을 추천하기 위해 $\hat x_ 0$을 사용한다. 추론 과정은 다음과 같이 알고리즘 2에 요약이 되어 있다. 
@@ -284,7 +285,7 @@ $[ z_ 0^ c ]^ C_ {c=1}$을 합치는 것으로 압축된 $z_ 0$을 얻을 수 �
 
 ![Untitled 18](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/fb80ff7c-f766-49f2-b998-6460bf209afd)
 
-- $\gamma$는 KL 규제(regularization)의 강도를 조절한다.
+- $\gamma$는 KL 규제(*regularization*)의 강도를 조절한다.
 
 이후, VAE와 확산 모형의 손실 함수를 조합하여 L-DiffRec의 최적화를 위한 손실 함수 $\mathcal L_ v (x_ 0, \phi, \psi) + \lambda \cdot \mathcal L(z_ 0, \theta)$를 얻을 수 있다. 하이퍼 파라미터 $\lambda$는 두 항이 동일한 영향력을 갖도록 보장한다. 
 
@@ -297,7 +298,7 @@ $[ z_ 0^ c ]^ C_ {c=1}$을 합치는 것으로 압축된 $z_ 0$을 얻을 수 �
 
 ## Temporal Diffusion
 
-사용자의 선호도는 시간에 따라 바뀔 수 있기 때문에 DiffRec의 훈련 중에 시간적인 정보를 포착하는 것은 중요하다. 최근의 상호 작용이 사용자의 현재 선호도를 더 잘 반영한다고 가정한다면, 시간-인지(time-aware) reweighting 전략을 통해 더 나중의 사용자의 상호 작용에 더 많은 가중을 둘 수 있다. 
+사용자의 선호도는 시간에 따라 바뀔 수 있기 때문에 DiffRec의 훈련 중에 시간적인 정보를 포착하는 것은 중요하다. 최근의 상호 작용이 사용자의 현재 선호도를 더 잘 반영한다고 가정한다면, 시간-인지(*time-aware*) *reweighting* 전략을 통해 더 나중의 사용자의 상호 작용에 더 많은 가중을 둘 수 있다. 
 
 형식적으로는 다음과 같이 기술한다.
 
@@ -320,7 +321,7 @@ $[ z_ 0^ c ]^ C_ {c=1}$을 합치는 것으로 압축된 $z_ 0$을 얻을 수 �
 
 - 연구 질문 1: DiffRec은 다양한 실험 설정에서 기존 모델과 비교했을 때 얼마나 잘 작동하는가? 또한, DiffRec의 설계가 어떻게 성능에 영향을 미치는가?
 - 연구 질문 2: L-DiffRec은 추천 정확도와 비용에 대해 어떻게 작동하는가?
-- 연구 질문 3: T-DiffRec은 훈련 중에 상호 작용 타임 스탬프를 이용할 수 있을 때, 순차적 추천 모형(sequential recommender models)을 능가할 수 있는가?
+- 연구 질문 3: T-DiffRec은 훈련 중에 상호 작용 타임 스탬프를 이용할 수 있을 때, 순차적 추천 모형(*sequential recommender models*)을 능가할 수 있는가?
 
 ## 4.1 Experimental Settings
 
@@ -337,7 +338,7 @@ $[ z_ 0^ c ]^ C_ {c=1}$을 합치는 것으로 압축된 $z_ 0$을 얻을 수 �
 모든 데이터에 대해, 그들은 세 가지 다른 훈련 설정을 고려했다.
 
 1. **Clean training**: 평가가 4번 미만인 사용자의 상호 작용은 버린다.
-2. **Noisy training**: clean training과 같은 설정에서, 테스트 데이터 세트에 잡음이 섞인 상호 작용을 더한다. 
+2. **Noisy training**: *clean training*과 같은 설정에서, 테스트 데이터 세트에 잡음이 섞인 상호 작용을 더한다. 
 3. **Temporal training**: 훈련에 추가적으로 타임 스탬프를 고려한다. 즉, 순차적 추천 모형과 같이 사용자의 상호 작용 시퀀스를 모델링한다. 이는 시간적 모델링의 효과를 평가하기 위함이다. 
 
 ### Table 1
@@ -346,24 +347,24 @@ $[ z_ 0^ c ]^ C_ {c=1}$을 합치는 것으로 압축된 $z_ 0$을 얻을 수 �
 
 테이블 1은 두 가지 세 가지 데이터에 대한 통계량을 나타낸다.
 
-- **C**, **N**은 각각 Clean training과 natural noise training을 나타낸다.
-- **Int.**는 상호 작용(interactions)을 나타낸다.
+- **C**, **N**은 각각 *Clean training*과 *natural noise training*을 나타낸다.
+- **Int**는 상호 작용(*interactions*)을 나타낸다.
 
 ### Baselines
 
 그들은 DiffRec을 뛰어난 성능을 보이는 기존 모형과 비교하였다. 
 
-- **MF**: 행렬 분해(matrix factorization)를 기반으로 하는 대표적인 협업 필터링 모형.
-- **LightGCN**: 그래프 합성 네트워크(GCN)의 linear neighborhood aggregation을 통해 사용자와 아이템의 표현을 학습한다.
+- **MF**: 행렬 분해(*matrix factorization*)를 기반으로 하는 대표적인 협업 필터링 모형.
+- **LightGCN**: 그래프 합성 네트워크(GCN)의 *linear neighborhood aggregation*을 통해 사용자와 아이템의 표현을 학습한다.
 - **CDAE**: 오염된 상호 작용으로부터 원래의 상호 작용을 복원하기 위해 오토인코더를 훈련한다.
 - **MultiDAE**: 드롭 아웃을 이용해 상호 작용을 오염시키고 오토인코더를 통해 이를 복원한다.
-- **MultiDAE++:** DiffRec과 유사한 방식으로 상호 작용을 오염시키고 multiDAE를 통해 상호 작용을 복원한다. DiffRec과 다른 점은, 잡음 제거(denoise)를 한 번에 한다는 점이다.
+- **MultiDAE++:** DiffRec과 유사한 방식으로 상호 작용을 오염시키고 multiDAE를 통해 상호 작용을 복원한다. DiffRec과 다른 점은, 잡음 제거(*denoise*)를 한 번에 한다는 점이다.
 - **MultiVAE**: 상호 작용 생성 과정을 모델링하기 위해 VAE를 활용한다.
 - **CODIGEM**: 확산 과정을 이용하는 생성 모형이다. 역 생성 과정을 모델링하기 위해 많은 AE를 활용하지만 오로지 하나의 AE만을 이용하여 상호 작용을 예측한다.
 
 ### Evaluation
 
-각 사용자에 대해, 상호 작용이 되지 않은(non-interacted) 모든 아이템에 대해 순위를 정하는 full-ranking protocol을 따라 평가한다. 성능 비교를 위해 자주 쓰이는 두 가지의 지표 Recall@K와 NDCG@K를 이용한다. K는 10 혹은 20으로 설정한다. 
+각 사용자에 대해, 상호 작용이 되지 않은(*non-interacted*) 모든 아이템에 대해 순위를 정하는 *full-ranking protocol*을 따라 평가한다. 성능 비교를 위해 자주 쓰이는 두 가지의 지표 Recall@K와 NDCG@K를 이용한다. K는 10 혹은 20으로 설정한다. 
 
 ## 4.2 Analysis of DiffRec (RQ1)
 
@@ -371,15 +372,15 @@ $[ z_ 0^ c ]^ C_ {c=1}$을 합치는 것으로 압축된 $z_ 0$을 얻을 수 �
 
 ![Untitled 1](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/f23fef66-2158-44c6-8bdc-25a853a3df92)
 
-Clean training에 대해, 기존 모형과 DiffRec의 전체적인 성능을 나타낸 테이블이다.
+*Clean training*에 대해, 기존 모형과 DiffRec의 전체적인 성능을 나타낸 테이블이다.
 
 - 최고의 결과는 볼드체로, 두 번째로 좋은 결과는 밑줄로 표시하였다.
-- **%Improve.**는 기존 모형과 비교하였을 때 DiffRec의 상대적인 성능 개선을 나타낸다.
+- **%Improve**는 기존 모형과 비교하였을 때 DiffRec의 상대적인 성능 개선을 나타낸다.
 - *는 단일 표본 t 검정($p <0.05$) 아래, 기존 모형과 비교했을 때 통계적으로 유의한 성능 향상을 보였다는 사실을 암시한다.
 
 ### Clean training
 
-- 대부분의 생성 모형은 MF나 LightGCN보다 좋은 성능을 보였다. 그 이유는 생성 모형과 실제 세상의 상호 작용의 생성 과정이 일치하기 때문일 수 있다. 특히, MultiVAE가 좋은 성능을 보였는데, 이는 변분 추론(variational inference)과 다항 가능도(multinomial likelihood)의 활용이 더 강한 생성 모델링으로 이어졌기 때문이라 생각할 수 있다.
+- 대부분의 생성 모형은 MF나 LightGCN보다 좋은 성능을 보였다. 그 이유는 생성 모형과 실제 세상의 상호 작용의 생성 과정이 일치하기 때문일 수 있다. 특히, MultiVAE가 좋은 성능을 보였는데, 이는 변분 추론(*variational inference*)과 다항 가능도(*multinomial likelihood*)의 활용이 더 강한 생성 모델링으로 이어졌기 때문이라 생각할 수 있다.
 - 모든 경우에서 MultiDAE++는 MultiDAE보다 성능이 좋았다. CODIGEM은 LightGCN보다도 성능이 떨어졌다. 이는 CODIGEM이 하나의 AE만을 추론에 이용했기 때문이라고 생각할 수 있다. 이런 식의 접근은 본질적으로 MultiDAE를 적은 잡음으로 훈련하는 것과 같다.
 - **DiffRec은 세 개의 데이터 모두에 대해 유의한 성능 향상**을 보였다. 이유는 다음과 같이 생각해 볼 수 있다.
     - DiffRec은 잡음 제거 과정을 점진적으로 학습하는 것으로 더 복잡한 분포를 모델링할 수 있다.
@@ -390,13 +391,13 @@ Clean training에 대해, 기존 모형과 DiffRec의 전체적인 성능을 나
 
 ![Untitled 2](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/74d9ce45-701f-4035-a38e-5e236964705a)
 
-DiffRec과 가장 성능이 좋은 기존 생성 모형 MultiVAE, 그리고 성능이 가장 좋으면서 생성 모형이 아닌 기존 모형을 noisy training with natrual noises 설정 아래 비교하여 그 성능을 나타낸 테이블이다. 
+DiffRec과 가장 성능이 좋은 기존 생성 모형 MultiVAE, 그리고 성능이 가장 좋으면서 생성 모형이 아닌 기존 모형을 *noisy training with natrual noises* 설정 아래 비교하여 그 성능을 나타낸 테이블이다. 
 
 ### Figure 4
 
 ![Untitled 3](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/5a8375a1-b52d-4be0-b67b-7e438c2aa8e7)
 
-Amazon-book 데이터에 대해 noisy training with random noises 설정 아래 비교한 성능을 나타낸 그림이다. 
+Amazon-book 데이터에 대해 *noisy training with random noises* 설정 아래 비교한 성능을 나타낸 그림이다. 
 
 ### Noisy training
 
@@ -405,7 +406,7 @@ Amazon-book 데이터에 대해 noisy training with random noises 설정 아래 
 1. **natural noises**: 거짓-양성 상호 작용을 양성으로 하여 임의로 훈련 데이터와 검증 데이터에 추가한다. 테이블 3에 실험 결과를 나타냈다. 
 2. **random noises**: 상호 작용이 되지 않은 아이템을 양성 상호 작용으로 추가한다. 그림 4에 잡음을 10%에서부터 50%까지 증가시키면서 비교한 결과를 나타냈다. 
 
-테이블 3에서 DiffRec이 MultiVAE와 LightGCN을 능가한다는 사실을 관찰할 수 있다. 이는 DiffRec이 natural noises에 강건하다는 사실을 나타낸다. 이는 합리적인데, 왜냐하면 거짓-양성 상호 작용은 본질적으로 오염된 상호 작용이기 때문이다. DiffRec은 그러한 오염에서부터 깨끗한 상호 작용을 복원하기 위해 최적화된다. 
+테이블 3에서 DiffRec이 MultiVAE와 LightGCN을 능가한다는 사실을 관찰할 수 있다. 이는 DiffRec이 *natural noises*에 강건하다는 사실을 나타낸다. 이는 합리적인데, 왜냐하면 거짓-양성 상호 작용은 본질적으로 오염된 상호 작용이기 때문이다. DiffRec은 그러한 오염에서부터 깨끗한 상호 작용을 복원하기 위해 최적화된다. 
 
 그림 4의 결과는 다음과 같이 요약할 수 있다.
 
@@ -416,7 +417,7 @@ Amazon-book 데이터에 대해 noisy training with random noises 설정 아래 
 
 ![Untitled 4](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/31130f2c-2503-435f-9453-b762ef6a093f)
 
-중요도 표본 추출(importance sampling)과 균등 표본 추출(uniform sampling)의 효과를 나타낸 그림이다. 
+중요도 표본 추출(*importance sampling*)과 균등 표본 추출(*uniform sampling*)의 효과를 나타낸 그림이다. 
 
 ### Figure 6
 
@@ -439,7 +440,7 @@ DiffRec의 설계를 분석하기 위해 그들은 추가적인 실험을 수행
 - **Effects of noise scale and step**: 두 가지 중요한 하이퍼-파라미터에 대해 분석한 결과를 그림 (6)에 나타내었다.
     - 잡음의 크기가 증가하면서 처음에는 성능이 증가하지만 특정 포인트에서 다시 성능이 감소한다. 따라서, 상대적으로 작은 크기의 잡음을 선택할 필요가 있다.
     - 성능이 $T$에 따라 요동치는데, 이는 확산 단계의 증가가 정확도에 적은 영향을 끼친다는 사실을 나타낸다. 너무 큰 $T$는 자원을 크게 요구하기 때문에, 그들은 $T=5$를 선택하였다.
-- $**x_0$-ELBO vs. $\epsilon$-ELBO**: 테이블 5에서 $x_0$와 $\epsilon$를 예측을 비교한 결과를 나타냈다. $\epsilon$-ELBO가 더 성능이 좋지 않은데, 그 이유를 MLP를 통해 임의의 잡음을 예측하는 게 어렵기 때문이라고 생각할 수 있다.
+- **$x_0$-ELBO vs. $\epsilon$-ELBO**: 테이블 5에서 $x_0$와 $\epsilon$를 예측을 비교한 결과를 나타냈다. $\epsilon$-ELBO가 더 성능이 좋지 않은데, 그 이유를 MLP를 통해 임의의 잡음을 예측하는 게 어렵기 때문이라고 생각할 수 있다.
 
 ## 4.3 Analysis of L-DiffRec (RQ2)
 
@@ -449,7 +450,7 @@ DiffRec의 설계를 분석하기 위해 그들은 추가적인 실험을 수행
 
 L-DiffRec, DiffRec과 MultiVAE의 성능을 clean training 설정 아래 비교한 것이다. 
 
-- **par.**는 모수(parameter)의 수를 나타낸다.
+- **par**는 모수(*parameter*)의 수를 나타낸다.
 
 ### Clean training
 
@@ -471,17 +472,17 @@ L-DiffRec, DiffRec과 MultiVAE의 성능을 clean training 설정 아래 비교�
 
 ![Untitled 8](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/a82dc950-5e74-4409-b90c-6228fa2d58c9)
 
-세 개의 데이터에 대해, natural noise training 설정 아래 L-DiffRec과 DiffRec을 비교하여 그 성능을 나타낸 테이블이다. 
+세 개의 데이터에 대해, *natural noise training* 설정 아래 L-DiffRec과 DiffRec을 비교하여 그 성능을 나타낸 테이블이다. 
 
 ### Noisy training
 
-요구되는 자원은 noisy training과 clean training이 같은 반면, L-DiffRec이 DiffRec보다 noisy training에서 더 나은 성능을 보인다. 테이블 4에서 이 결과를 확인할 수 있다. 이러한 현상이 관찰되는 한 가지 가능한 이유를 클러스터링된 범주가 거짓-양성 상호 작용일 가능성이 있는 상호 작용을 더 적게 갖고 있기 때문이라고 생각할 수 있다. 아이템 클러스터링을 통한 표현 압축은 이러한 잡음의 효과를 약하게 한다. 
+요구되는 자원은 *noisy training*과 *clean training*이 같은 반면, L-DiffRec이 DiffRec보다 *noisy training*에서 더 나은 성능을 보인다. 테이블 4에서 이 결과를 확인할 수 있다. 이러한 현상이 관찰되는 한 가지 가능한 이유를 클러스터링된 범주가 거짓-양성 상호 작용일 가능성이 있는 상호 작용을 더 적게 갖고 있기 때문이라고 생각할 수 있다. 아이템 클러스터링을 통한 표현 압축은 이러한 잡음의 효과를 약하게 한다. 
 
 ### Figure 7
 
 ![Untitled 9](https://github.com/Won-Seong/Review-Diffusion-Recommender-Model/assets/54873618/251ab59c-2111-428c-a360-e9c37345d05e)
 
-L-DiffRec의 클러스터링 범주의 수의 효과를 clean training 설정 아래 비교하여 나타낸 그림이다.
+L-DiffRec의 클러스터링 범주의 수의 효과를 *clean training* 설정 아래 비교하여 나타낸 그림이다.
 
 ### Effect of category number
 
@@ -506,17 +507,17 @@ T-DiffRec의 시간적 모델링에서의 효과를 증명하기 위해 T-DiffRe
 
 DiffRec과 SOTA를 달성한 순차적 기존 모형 ACVAE를 비교한 성능을 나타낸 테이블이다. 각 모형을 타임 스탬프를 이용하여 훈련하였다. 
 
-- **par.**는 모수의 수를 나타낸다.
+- **par**는 모수의 수를 나타낸다.
 
 # 5. Related Work
 
 ### Generative recommendation
 
-생성 모형은 아이템 사이 협업 신호(collaborative signals)를 잘 학습하는데, 이는 모든 아이템에 대한 예측을 동시에 모델링하기 때문이다. 게다가, 생성 모형은 사용자의 선호와 상호 작용 사이의 복잡한 관계를 잘 포착한다. 
+생성 모형은 아이템 사이 협업 신호(*collaborative signals*)를 잘 학습하는데, 이는 모든 아이템에 대한 예측을 동시에 모델링하기 때문이다. 게다가, 생성 모형은 사용자의 선호와 상호 작용 사이의 복잡한 관계를 잘 포착한다. 
 
 기존의 생성 추천 모형은 크게 두 가지로 나눌 수 있다.
 
-1. GAN 기반 기법: 적대적 훈련(adversarial training)을 활용하여 생성기를 최적화하고 사용자의 상호 작용을 예측한다.
+1. GAN 기반 기법: 적대적 훈련(*adversarial training*)을 활용하여 생성기를 최적화하고 사용자의 상호 작용을 예측한다.
 2. VAE 기반 기법: 사후 분포를 추정하여 인코더와 디코더를 학습하고 모든 아이템에 대해 상호 작용 확률을 예측한다. 
 
 기존의 생성 추천 모형 역시 성공적이었으나, 확산 모형은 그보다 더한 장점을 갖는다. 예를 들면, 확산 모형은 더 안정적이면서 다양한 작업에 대해 높은 품질을 보장한다. 
@@ -533,7 +534,7 @@ DiffRec과 SOTA를 달성한 순차적 기존 모형 ACVAE를 비교한 성능�
 - 개인화 추천을 보장하기 위해, 그들은 순방향 과정에서 잡음의 크기와 추론 단계를 줄여 사용자의 상호 작용을 오염시켰다.
 - 그들은 또한 전통적인 생성 모형을 두 가지 확장을 통해 확장하였다.
     - 첫 번째 확장은 L-DiffRec에 관한 것으로, 이는 차원 압축을 위해 아이템을 클러스터링하고 잠재 공간에서 확산 과정을 수행한다. 결과적으로 이는 대규모 아이템 예측을 상대적으로 저렴한 비용으로 수행할 수 있다.
-    - 두 번째 확장은 T-DiffRec에 관한 것으로, 이는 시간-인지 reweighting 전략을 활용하여 사용자의 상호 작용에서 시간적 패턴을 포착한다. 결과적으로 이는 상호 작용 시퀀스의 시간적 모델링을 할 수 있게 한다.
+    - 두 번째 확장은 T-DiffRec에 관한 것으로, 이는 시간-인지 *reweighting* 전략을 활용하여 사용자의 상호 작용에서 시간적 패턴을 포착한다. 결과적으로 이는 상호 작용 시퀀스의 시간적 모델링을 할 수 있게 한다.
 
 ## Future work
 
@@ -544,6 +545,14 @@ DiffRec과 SOTA를 달성한 순차적 기존 모형 ACVAE를 비교한 성능�
 
 # 7. My Reivew
  
+먼저, 추천 모형의 목적을 확산 모형과 나란히 놓은 저자들의 주장이 흥미롭다. 그들의 말에 따르면, 추천 모형은 본질적으로 잡음이 섞인 과거의 상호 작용을 통해 미래의 상호 작용 확률을 예측한다. 비록 완전히 일치하지는 않지만, 확산 모형을 떠올리기에 충분한 설명이다. 그들의 말대로 현재 상승 가도를 달리는 확산 모형을 추천 모형에 통합하고자 하는 시도는 자연스럽고, 그들은 그 논리와 아이디어를 잘 발전시키지 않았나 싶다.
+
+다만, 추천 모형이 아직 익숙하지 않은 나에게 있어 이러한 접근이 많이 직관적이지는 않다. 잘 아는 건 아니지만, 확산 모형의 본질은 결국 조금씩 잡음을 제거하는 그 과정에 있다고 생각한다. Gaussian에서 한 번에 데이터 분포를 포착하라는, 어찌 보면 가혹한 일을 우리는 VAE에게 시켰었고, 확산 모형에게는 이를 조금씩 나누어서 하라고 시켰다. 확산 모형의 구조는 우리에게 많은 혜택을 갖다 주었고, 결과적으로 이렇게 조금씩 잡음을 제거하여 데이터를 추출하는 작업은 그리 무리한 게 아니게 되었다. 확산 모형과 스코어 기반 모형과의 연결은 우리에게 더 많은 직관을 갖다 주기도 하였다. 
+
+확산 모형의 입장에서 보면 할 수 있는 건 과거의 데이터를 통해 사용자의 상호 작용을 생성하는 것이다. 잡음을 더하고 제거하는 과정이 실제 세계의 상호 작용 생성 과정과 일치하는지는 잘 모르겠으니까 넘어가자. 어떻게 모든 아이템에 대해 특정 사용자의 상호 작용을 잘 생성할 수 있는 건지 잘 모르겠다. 일견 그래프 문제처럼 굉장히 복잡해 보이는데... 왜 그들은 조건부 생성 모형을 쓰지 않았을까? 나에게는 사용자의 특성을 조건으로 주고 그에 따라 아이템에 대한 상호 작용을 생성하는 모형이 조금은 더 자연스러워 보인다.
+
+물론, 나는 추천 모형에 익숙하지 않기 때문에 이러한 의견이 그리 말이 되지 않을 수도 있다. 아무튼, 내 지식으로는 확산 모형과 추천 모형을 결합하는 게 아직은 그렇게 직관적이지는 않다. 이를 더 잘 이해하려면 추천 모형을 통계적 관점에서 조금 더 공부를 해 보아야 할 듯하다.
+
 ---
 
 # Author Information
